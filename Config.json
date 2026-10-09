@@ -1,0 +1,1673 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "schema": "nexus/config/v1",
+    "name": "nexus",
+    "description": "single-pass URL scraper, search router, and reporting service",
+    "author": "nexus",
+    "license": "proprietary",
+    "locale_default": "en-US",
+    "timezone_default": "UTC",
+    "created": "2026-10-09",
+    "updated": "2026-10-09",
+    "strict_mode": true,
+    "fail_on_missing": true,
+    "reload_watch_sec": 5
+  },
+
+  "http": {
+    "timeout_sec": 20,
+    "connect_timeout_sec": 8,
+    "read_timeout_sec": 15,
+    "write_timeout_sec": 10,
+    "pool_timeout_sec": 5,
+    "max_redirects": 8,
+    "max_retries": 3,
+    "retry_backoff_base_ms": 250,
+    "retry_backoff_max_ms": 4000,
+    "retry_backoff_jitter": 0.35,
+    "retry_on_status": [408, 425, 429, 500, 502, 503, 504, 520, 521, 522, 523, 524],
+    "retry_on_exceptions": ["ConnectTimeout", "ReadTimeout", "ConnectionError", "ProtocolError"],
+    "verify_tls": true,
+    "tls_min_version": "1.2",
+    "tls_max_version": "1.3",
+    "tls_ciphers": "auto",
+    "alpn_protocols": ["h2", "http/1.1"],
+    "http2": true,
+    "http3": false,
+    "keepalive": true,
+    "keepalive_expiry_sec": 30,
+    "max_connections": 200,
+    "max_keepalive_connections": 40,
+    "connection_reuse": true,
+    "follow_redirects": true,
+    "allow_redirects": true,
+    "redirect_scheme_allowlist": ["http", "https"],
+    "accept_encoding": "gzip, deflate, br, zstd",
+    "decompression": true,
+    "content_length_limit_mb": 12,
+    "buffer_size_kb": 64,
+    "streaming_threshold_kb": 512,
+    "dns_cache_enabled": true,
+    "dns_cache_ttl_sec": 300,
+    "dns_prefer_ipv4": true,
+    "dns_prefer_ipv6": false,
+    "ip_family": "auto",
+    "cookie_jar_enabled": true,
+    "cookie_jar_ttl_sec": 900,
+    "cookies_persist": false,
+    "session_pool_size": 16,
+    "request_id_header": "X-Request-ID",
+    "trace_header": "X-Trace-ID",
+    "span_header": "X-Span-ID",
+    "correlation_header": "X-Correlation-ID",
+    "default_headers": {
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Accept-Encoding": "gzip, deflate, br",
+      "Cache-Control": "no-cache",
+      "Pragma": "no-cache",
+      "DNT": "1",
+      "Upgrade-Insecure-Requests": "1",
+      "Sec-Fetch-Dest": "document",
+      "Sec-Fetch-Mode": "navigate",
+      "Sec-Fetch-Site": "none",
+      "Sec-Fetch-User": "?1",
+      "Connection": "keep-alive",
+      "TE": "trailers",
+      "Upgrade": "h2c"
+    },
+    "methods_allowlist": ["GET", "HEAD", "POST", "OPTIONS"],
+    "scheme_allowlist": ["http", "https"],
+    "robots_txt": {
+      "enabled": true,
+      "cache_ttl_sec": 3600,
+      "user_agent": "*",
+      "honor_crawl_delay": true,
+      "honor_disallow": true,
+      "fail_open": false
+    },
+    "limits": {
+      "requests_per_domain_per_min": 30,
+      "requests_per_domain_concurrent": 4,
+      "requests_global_concurrent": 64,
+      "bytes_per_domain_per_min_mb": 60,
+      "response_header_max_kb": 64
+    },
+    "blocked_status_codes": [401, 402, 403, 451],
+    "soft_block_detection": {
+      "enabled": true,
+      "challenge_markers": ["cf-challenge", "captcha", "just a moment", "attention required"],
+      "min_body_bytes_for_marker_check": 512,
+      "enabled_markers_min_body_kb": 1
+    }
+  },
+
+  "fingerprints": {
+  "default": "chrome",
+  "rotation": "per_domain",
+  "rotation_on_block": true,
+  "cooldown_sec": 300,
+  "profiles": [
+    { "id": "chrome",          "kind": "chrome",   "priority": 1,  "enabled": true },
+    { "id": "chrome120",       "kind": "chrome",   "priority": 2,  "enabled": true },
+    { "id": "chrome123",       "kind": "chrome",   "priority": 3,  "enabled": true },
+    { "id": "chrome124",       "kind": "chrome",   "priority": 4,  "enabled": true },
+    { "id": "chrome131",       "kind": "chrome",   "priority": 5,  "enabled": true },
+    { "id": "chrome133a",      "kind": "chrome",   "priority": 6,  "enabled": true },
+    { "id": "chrome136",       "kind": "chrome",   "priority": 7,  "enabled": true },
+    { "id": "firefox",         "kind": "firefox",  "priority": 8,  "enabled": true },
+    { "id": "firefox133",      "kind": "firefox",  "priority": 9,  "enabled": true },
+    { "id": "firefox135",      "kind": "firefox",  "priority": 10, "enabled": true },
+    { "id": "safari",          "kind": "safari",   "priority": 11, "enabled": true },
+    { "id": "safari184",       "kind": "safari",   "priority": 12, "enabled": true },
+    { "id": "safari260",       "kind": "safari",   "priority": 13, "enabled": true },
+    { "id": "safari184_ios",   "kind": "safari",   "priority": 14, "enabled": true },
+    { "id": "edge101",         "kind": "edge",     "priority": 15, "enabled": true },
+    { "id": "chrome131_android","kind": "chrome",  "priority": 16, "enabled": false },
+    { "id": "safari260_ios",   "kind": "safari",   "priority": 17, "enabled": false },
+    { "id": "chrome145",       "kind": "chrome",   "priority": 18, "enabled": false },
+    { "id": "chrome146",       "kind": "chrome",   "priority": 19, "enabled": false },
+    { "id": "firefox144",      "kind": "firefox",  "priority": 20, "enabled": false }
+  ],
+  "fallback_order": ["chrome", "firefox", "safari"],
+  "rotate_after_consecutive_failures": 3,
+  "rotate_after_status_codes": [403, 429, 503]
+  },
+
+  "user_agents": {
+    "strategy": "match_fingerprint",
+    "custom_rotation": false,
+    "list": [
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:119.0) Gecko/20100101 Firefox/119.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:118.0) Gecko/20100101 Firefox/118.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:121.0) Gecko/20100101 Firefox/121.0",
+      "Mozilla/5.0 (X11; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0",
+      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Safari/605.1.15",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Safari/605.1.15",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36 Edg/118.0.0.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0",
+      "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+      "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36",
+      "Mozilla/5.0 (Linux; Android 13; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Mobile Safari/537.36",
+      "Mozilla/5.0 (Linux; Android 12; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Mobile Safari/537.36",
+      "Mozilla/5.0 (Linux; Android 14; SM-S928B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Mobile/15E148 Safari/604.1",
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1",
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1",
+      "Mozilla/5.0 (iPad; CPU OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Mobile/15E148 Safari/604.1",
+      "Mozilla/5.0 (iPad; CPU OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1",
+      "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+      "Mozilla/5.0 (Linux; Android 9; SM-J730F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36",
+      "Mozilla/5.0 (Linux; Android 11; moto g power) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Mobile Safari/537.36",
+      "Mozilla/5.0 (Linux; Android 12; Redmi Note 11) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Mobile Safari/537.36",
+      "Mozilla/5.0 (Linux; Android 13; CPH2451) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+      "Mozilla/5.0 (Linux; Android 14; V2309) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:115.0) Gecko/20100101 Firefox/115.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/109.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:133.0) Gecko/20100101 Firefox/133.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 14.2; rv:121.0) Gecko/20100101 Firefox/121.0",
+      "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0",
+      "Mozilla/5.0 (X11; Debian; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0",
+      "Mozilla/5.0 (X11; Arch Linux; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Safari/605.1.15",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Safari/605.1.15",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/130.0.0.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/131.0.0.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/132.0.0.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/133.0.0.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/134.0.0.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/135.0.0.0",
+      "Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36",
+      "Mozilla/5.0 (Linux; Android 15; SM-S938B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Mobile Safari/537.36",
+      "Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Mobile/15E148 Safari/604.1",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 15_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 15_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Safari/605.1.15",
+      "curl/8.6.0",
+      "Wget/1.21.4"
+    ],
+    "bot_identities": [
+      { "name": "Googlebot",  "ua": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",       "enabled": false },
+      { "name": "Bingbot",    "ua": "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)",        "enabled": false },
+      { "name": "DuckDuckBot","ua": "DuckDuckBot/1.1; (+http://duckduckgo.com/duckduckbot.html)",                     "enabled": false },
+      { "name": "YandexBot",  "ua": "Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)",               "enabled": false }
+    ]
+  },
+
+  "proxies": {
+    "enabled": false,
+    "strategy": "round_robin",
+    "rotation_on_failure": true,
+    "rotation_on_block": true,
+    "health_check_enabled": false,
+    "health_check_interval_sec": 300,
+    "health_check_url": "https://httpbin.org/ip",
+    "timeout_sec": 12,
+    "max_concurrent_per_proxy": 8,
+    "backoff_sec": 60,
+    "residential_enabled": false,
+    "datacenter_enabled": false,
+    "pool": [],
+    "schemes": ["http", "https", "socks5", "socks5h"],
+    "auth_methods": ["none", "basic", "bearer"],
+    "geo_routing": {
+      "enabled": false,
+      "prefer_same_country": true,
+      "fallback_country": "us"
+    },
+    "sticky_sessions": {
+      "enabled": false,
+      "ttl_sec": 600,
+      "max_reuses": 30
+    }
+  },
+
+  "parsers": {
+    "engine": "selectolax",
+    "backend": "lexbor",
+    "html_detection": {
+      "sniff_bytes": 4096,
+      "charset_meta_patterns": ["charset=([a-zA-Z0-9-]+)", "charset=\"([a-zA-Z0-9-]+)\""],
+      "default_charset": "utf-8",
+      "auto_decode": true,
+      "fallback_charsets": ["utf-8", "latin-1", "windows-1252", "gb18030", "big5", "shift_jis", "euc-kr"]
+    },
+    "modes": {
+      "html":     { "enabled": true,  "backend": "lexbor" },
+      "xml":      { "enabled": true,  "backend": "lexbor" },
+      "xhtml":    { "enabled": true,  "backend": "lexbor" },
+      "svg":      { "enabled": true,  "backend": "lexbor" },
+      "text":     { "enabled": true,  "backend": "none"   },
+      "json":     { "enabled": true,  "backend": "json"   },
+      "xml_rss":  { "enabled": true,  "backend": "lexbor" },
+      "xml_atom": { "enabled": true,  "backend": "lexbor" }
+    },
+    "preprocessing": {
+      "strip_comments": true,
+      "strip_scripts": true,
+      "strip_styles": true,
+      "strip_noscript": true,
+      "strip_iframes": true,
+      "strip_svg_inline": false,
+      "strip_data_urls": true,
+      "remove_empty_nodes": true,
+      "normalize_whitespace_pre": true,
+      "lowercase_tags": true,
+      "resolve_entities": true
+    },
+    "limits": {
+      "max_dom_nodes": 200000,
+      "max_depth": 256,
+      "max_attribute_length": 8192,
+      "max_text_node_length": 1000000
+    },
+    "selector_engine": {
+      "css_supported": true,
+      "xpath_supported": true,
+      "pseudo_classes": ["first-child", "last-child", "nth-child", "not", "has", "is", "where"],
+      "case_sensitive_attributes": false,
+      "fuzzy_matching": false
+    },
+    "block_tags": ["div", "section", "article", "main", "aside", "header", "footer", "nav"],
+    "inline_tags": ["span", "a", "em", "strong", "b", "i", "u", "code", "small", "mark", "sub", "sup"],
+    "void_tags": ["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"],
+    "table_handling": {
+      "preserve_structure": true,
+      "convert_to_markdown": true,
+      "header_detection": "thead_or_first_row",
+      "colspan_rowspan_support": true
+    },
+    "list_handling": {
+      "preserve_ordered": true,
+      "preserve_unordered": true,
+      "nested_depth": 8
+    },
+    "fallback_to": ["html5lib", "lxml", "regex"]
+  },
+
+  "extractors": {
+    "content": {
+      "selectors_priority": [
+        "article",
+        "main",
+        "[role=main]",
+        ".post-content",
+        ".entry-content",
+        ".article-content",
+        ".article-body",
+        ".post-body",
+        ".content-body",
+        ".story-body",
+        "#content",
+        "#main-content",
+        "#article",
+        ".markdown-body",
+        ".prose"
+      ],
+      "fallback": "densest_text_block",
+      "min_text_length": 200,
+      "min_paragraph_count": 2,
+      "block_tags": ["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "blockquote", "pre", "code", "td", "th"]
+    },
+    "title": {
+      "selectors_priority": [
+        "h1",
+        "meta[property='og:title']",
+        "meta[name='twitter:title']",
+        "title",
+        ".post-title",
+        ".entry-title",
+        ".article-title"
+      ],
+      "strip_site_suffix": true,
+      "site_suffix_separators": [" - ", " | ", " — ", " · "],
+      "max_length": 300,
+      "trim_whitespace": true
+    },
+    "author": {
+      "selectors_priority": [
+        "meta[name='author']",
+        "meta[property='article:author']",
+        "[rel=author]",
+        ".author",
+        ".byline",
+        ".post-author",
+        ".entry-author",
+        "[itemprop=author]"
+      ],
+      "normalize": true,
+      "strip_prefixes": ["by ", "By ", "Author: ", "Written by "],
+      "max_length": 120
+    },
+    "published": {
+      "selectors_priority": [
+        "meta[property='article:published_time']",
+        "meta[name='publishdate']",
+        "meta[name='pubdate']",
+        "meta[name='date']",
+        "time[datetime]",
+        "time",
+        "[itemprop=datePublished]",
+        ".published",
+        ".post-date"
+      ],
+      "parse_formats": ["iso8601", "rfc2822", "rfc822", "unix", "natural"],
+      "timezone_fallback": "UTC"
+    },
+    "modified": {
+      "selectors_priority": [
+        "meta[property='article:modified_time']",
+        "meta[name='lastmod']",
+        "time[datetime]",
+        "[itemprop=dateModified]"
+      ],
+      "parse_formats": ["iso8601", "rfc2822", "unix"]
+    },
+    "description": {
+      "selectors_priority": [
+        "meta[name='description']",
+        "meta[property='og:description']",
+        "meta[name='twitter:description']"
+      ],
+      "max_length": 500
+    },
+    "canonical": {
+      "selectors_priority": [
+        "link[rel=canonical]",
+        "meta[property='og:url']"
+      ],
+      "resolve_relative": true
+    },
+    "language": {
+      "selectors_priority": [
+        "html[lang]",
+        "meta[http-equiv='content-language']",
+        "meta[name='language']"
+      ],
+      "fallback_to_detection": true
+    },
+    "favicon": {
+      "selectors_priority": [
+        "link[rel='icon']",
+        "link[rel='shortcut icon']",
+        "link[rel='apple-touch-icon']"
+      ],
+      "fallback_path": "/favicon.ico",
+      "resolve_relative": true
+    },
+    "open_graph": {
+      "enabled": true,
+      "properties": ["og:title", "og:description", "og:image", "og:url", "og:type", "og:site_name", "og:locale", "og:video"]
+    },
+    "twitter_card": {
+      "enabled": true,
+      "properties": ["twitter:card", "twitter:title", "twitter:description", "twitter:image", "twitter:site", "twitter:creator"]
+    },
+    "json_ld": {
+      "enabled": true,
+      "types": ["Article", "NewsArticle", "BlogPosting", "WebPage", "BreadcrumbList", "Organization", "Person", "Product", "Recipe", "Event"],
+      "merge_into": "meta"
+    },
+    "microdata": {
+      "enabled": true,
+      "itemprops": ["name", "headline", "datePublished", "dateModified", "author", "description"]
+    },
+    "images": {
+      "extract": true,
+      "min_width": 100,
+      "min_height": 100,
+      "max_count": 100,
+      "resolve_relative": true,
+      "capture_alt": true,
+      "capture_title": true,
+      "capture_dimensions": true,
+      "skip_data_urls": true,
+      "skip_tracking_pixels": true
+    },
+    "videos": {
+      "extract": true,
+      "selectors": ["video", "video source", "iframe[src*='youtube']", "iframe[src*='vimeo']"],
+      "capture_poster": true
+    },
+    "links": {
+      "extract": true,
+      "max_count": 500,
+      "resolve_relative": true,
+      "classify": ["internal", "external", "mailto", "tel", "anchor"],
+      "skip_javascript": true,
+      "skip_data_urls": true
+    },
+    "metadata": {
+      "extract_all_meta": true,
+      "extract_all_links": true,
+      "extract_all_scripts": false,
+      "extract_all_styles": false,
+      "keep_raw_html": false
+    },
+    "boilerplate": {
+      "detect_nav": true,
+      "detect_footer": true,
+      "detect_header": true,
+      "detect_sidebar": true,
+      "detect_cookie_banner": true,
+      "detect_related_posts": true,
+      "detect_share_buttons": true,
+      "detect_comments": false,
+      "detect_newsletter": true
+    },
+    "reading_time": {
+      "enabled": true,
+      "words_per_minute": 220
+    }
+  },
+
+  "clean": {
+    "enabled": true,
+    "whitespace": {
+      "normalize_spaces": true,
+      "collapse_multiple_spaces": true,
+      "collapse_blank_lines": true,
+      "trim_lines": true,
+      "trim_document": true,
+      "preserve_code_blocks": true,
+      "preserve_preformatted": true,
+      "tab_to_spaces": 4,
+      "max_consecutive_blank_lines": 1
+    },
+    "entities": {
+      "decode_html": true,
+      "decode_numeric": true,
+      "decode_named": true,
+      "keep_nbsp_as_space": true,
+      "strip_zero_width": true,
+      "strip_bom": true,
+      "strip_control_chars": true
+    },
+    "unicode": {
+      "normalize_form": "NFC",
+      "strip_emoji": false,
+      "strip_math_symbols": false,
+      "normalize_quotes": true,
+      "normalize_dashes": true,
+      "normalize_ellipsis": true,
+      "strip_invisible_marks": true,
+      "strip_rtl_marks": false
+    },
+    "markdown": {
+      "enabled": true,
+      "heading_style": "atx",
+      "link_style": "inline",
+      "code_fence": "```",
+      "list_marker": "-",
+      "ordered_marker": "1.",
+      "emphasis": "*",
+      "strong": "**",
+      "blockquote": ">",
+      "hr": "---",
+      "escape_special": true,
+      "preserve_newlines": true
+    },
+    "boilerplate_removal": {
+      "enabled": true,
+      "cookie_banners": true,
+      "subscribe_prompts": true,
+      "newsletter_blocks": true,
+      "social_share": true,
+      "related_articles": true,
+      "comments": false,
+      "advertisements": true,
+      "breadcrumbs": true,
+      "footers": true,
+      "navigation": true,
+      "sidebars": true,
+      "tags_lists": true,
+      "author_bio": false,
+      "read_more": true,
+      "skip_to_content": true
+    },
+    "pattern_removals": {
+      "enabled": true,
+      "patterns": [
+        "(?i)subscribe\\s+to\\s+our\\s+newsletter",
+        "(?i)sign\\s+up\\s+for\\s+our",
+        "(?i)click\\s+here\\s+to\\s+read\\s+more",
+        "(?i)cookie\\s+policy",
+        "(?i)we\\s+use\\s+cookies",
+        "(?i)all\\s+rights\\s+reserved",
+        "(?i)share\\s+this\\s+article",
+        "(?i)follow\\s+us\\s+on"
+      ],
+      "case_insensitive": true
+    },
+    "language_aware": {
+      "enabled": true,
+      "preserve_language_specific_punct": true,
+      "preserve_cjk_spacing": true,
+      "preserve_rtl": true
+    },
+    "output": {
+      "format": "markdown",
+      "include_title": true,
+      "include_meta": true,
+      "include_links": true,
+      "include_images": true,
+      "include_reading_time": true,
+      "max_length_chars": 200000,
+      "truncate_indicator": "[...truncated]"
+    },
+    "post_clean_checks": {
+      "min_length": 100,
+      "reject_if_only_boilerplate": true,
+      "reject_if_mostly_links": false,
+      "min_alpha_ratio": 0.4
+    }
+  },
+
+  "search": {
+    "default": "duckduckgo",
+    "fallback_chain": ["duckduckgo", "brave", "mojeek", "marginalia"],
+    "parallel_engines": 1,
+    "timeout_sec": 15,
+    "results_per_page": 10,
+    "max_pages": 3,
+    "dedup_results": true,
+    "engines": {
+      "duckduckgo": {
+        "enabled": true,
+        "endpoint": "https://html.duckduckgo.com/html/",
+        "method": "POST",
+        "param_query": "q",
+        "param_region": "kl",
+        "param_safesearch": "kp",
+        "safesearch": "moderate",
+        "region": "wt-wt",
+        "result_selector": ".result",
+        "title_selector": ".result__a",
+        "snippet_selector": ".result__snippet",
+        "url_selector": ".result__url",
+        "next_page_param": "s",
+        "next_page_step": 20,
+        "requires_key": false,
+        "rate_limit_per_min": 30
+      },
+      "brave": {
+        "enabled": true,
+        "endpoint": "https://search.brave.com/search",
+        "method": "GET",
+        "param_query": "q",
+        "result_selector": "[data-type='web']",
+        "title_selector": "a.heading-serpresult",
+        "snippet_selector": ".snippet-description",
+        "url_selector": "a.heading-serpresult",
+        "requires_key": false,
+        "rate_limit_per_min": 20
+      },
+      "bing": {
+        "enabled": true,
+        "endpoint": "https://www.bing.com/search",
+        "method": "GET",
+        "param_query": "q",
+        "param_count": "count",
+        "param_first": "first",
+        "result_selector": "li.b_algo",
+        "title_selector": "h2 a",
+        "snippet_selector": ".b_caption p",
+        "url_selector": "h2 a",
+        "requires_key": false,
+        "rate_limit_per_min": 20
+      },
+      "yandex": {
+        "enabled": false,
+        "endpoint": "https://yandex.com/search/",
+        "method": "GET",
+        "param_query": "text",
+        "result_selector": ".serp-item",
+        "title_selector": ".OrganicTitle-Link",
+        "snippet_selector": ".OrganicTextContentSpan",
+        "url_selector": ".OrganicTitle-Link",
+        "requires_key": false,
+        "rate_limit_per_min": 10
+      },
+      "mojeek": {
+        "enabled": true,
+        "endpoint": "https://www.mojeek.com/search",
+        "method": "GET",
+        "param_query": "q",
+        "result_selector": "ul.results-standard li",
+        "title_selector": "a.title",
+        "snippet_selector": "p.s",
+        "url_selector": "a.title",
+        "requires_key": false,
+        "rate_limit_per_min": 30
+      },
+      "marginalia": {
+        "enabled": true,
+        "endpoint": "https://search.marginalia.nu/search",
+        "method": "GET",
+        "param_query": "query",
+        "result_selector": ".card",
+        "title_selector": ".card-title a",
+        "snippet_selector": ".card-text",
+        "url_selector": ".card-title a",
+        "requires_key": false,
+        "rate_limit_per_min": 20
+      },
+      "startpage": {
+        "enabled": false,
+        "endpoint": "https://www.startpage.com/sp/search",
+        "method": "GET",
+        "param_query": "query",
+        "result_selector": ".w-gl__result",
+        "title_selector": ".w-gl__result-title",
+        "snippet_selector": ".w-gl__description",
+        "url_selector": ".w-gl__result-title",
+        "requires_key": false,
+        "rate_limit_per_min": 10
+      },
+      "searxng": {
+        "enabled": false,
+        "endpoint": "http://localhost:8080/search",
+        "method": "GET",
+        "param_query": "q",
+        "param_format": "format",
+        "format": "json",
+        "requires_key": false,
+        "rate_limit_per_min": 60
+      }
+    },
+    "query_preprocessing": {
+      "trim": true,
+      "collapse_whitespace": true,
+      "strip_operators_default": false,
+      "support_quotes": true,
+      "support_site_operator": true,
+      "support_minus_operator": true,
+      "max_query_length": 512,
+      "url_encoding": "strict"
+    },
+    "safesearch_levels": ["off", "moderate", "strict"],
+    "result_fields": ["title", "url", "snippet", "domain", "position", "engine", "published_at", "favicon"]
+  },
+
+  "ranking": {
+    "enabled": true,
+    "weights": {
+      "title_match": 3.0,
+      "snippet_match": 1.5,
+      "domain_authority": 2.0,
+      "freshness": 1.8,
+      "position_baseline": 1.0,
+      "url_cleanliness": 0.5,
+      "https_bonus": 0.4,
+      "path_depth_penalty": 0.3,
+      "query_length_ratio": 0.8,
+      "keyword_density": 1.2,
+      "language_match": 2.5,
+      "domain_trust_bonus": 2.0,
+      "spam_penalty": -5.0
+    },
+    "freshness": {
+      "enabled": true,
+      "halflife_days": 30,
+      "max_age_days": 1825,
+      "unknown_date_score": 0.5
+    },
+    "domain_authority": {
+      "enabled": false,
+      "provider": "none",
+      "fallback_score": 0.5
+    },
+    "trusted_domains": [
+      "wikipedia.org", "britannica.com", "nature.com", "science.org",
+      "arxiv.org", "nih.gov", "cdc.gov", "who.int", "un.org",
+      "nasa.gov", "noaa.gov", "gov.uk", "europa.eu", "europarl.europa.eu",
+      "bbc.com", "reuters.com", "apnews.com", "npr.org", "nytimes.com",
+      "theguardian.com", "washingtonpost.com", "economist.com", "ft.com",
+      "wsj.com", "bloomberg.com", "cnbc.com", "forbes.com", "techcrunch.com",
+      "arstechnica.com", "theverge.com", "wired.com", "engadget.com",
+      "nature.org", "sciencemag.org", "phys.org", "space.com"
+    ],
+    "blocked_domains": [
+      "pinterest.com", "quora.com", "answers.yahoo.com", "ask.com",
+      "ezinearticles.com", "articlesbase.com", "hubpages.com"
+    ],
+    "spam_signals": {
+      "all_caps_title": 0.5,
+      "excessive_punctuation": 0.4,
+      "keyword_stuffing": 0.6,
+      "short_snippet": 0.3,
+      "long_url": 0.2,
+      "number_heavy_domain": 0.4,
+      "known_spam_tld": 0.8
+    },
+    "spam_tlds": [".tk", ".ml", ".ga", ".cf", ".gq", ".top", ".click", ".loan", ".work"],
+    "dedup": {
+      "enabled": true,
+      "normalize_url": true,
+      "strip_utm": true,
+      "strip_fragments": true,
+      "strip_trailing_slash": true,
+      "case_insensitive_host": true,
+      "similarity_threshold": 0.9
+    },
+    "output_fields": ["title", "url", "snippet", "domain", "score", "engine", "position"]
+  },
+
+  "languages": {
+    "supported": [
+      { "code": "en",    "name": "English",              "native": "English",       "rtl": false, "script": "latin" },
+      { "code": "es",    "name": "Spanish",              "native": "Español",       "rtl": false, "script": "latin" },
+      { "code": "fr",    "name": "French",               "native": "Français",      "rtl": false, "script": "latin" },
+      { "code": "de",    "name": "German",               "native": "Deutsch",       "rtl": false, "script": "latin" },
+      { "code": "it",    "name": "Italian",              "native": "Italiano",      "rtl": false, "script": "latin" },
+      { "code": "pt",    "name": "Portuguese",           "native": "Português",     "rtl": false, "script": "latin" },
+      { "code": "nl",    "name": "Dutch",                "native": "Nederlands",    "rtl": false, "script": "latin" },
+      { "code": "ru",    "name": "Russian",              "native": "Русский",       "rtl": false, "script": "cyrillic" },
+      { "code": "uk",    "name": "Ukrainian",            "native": "Українська",    "rtl": false, "script": "cyrillic" },
+      { "code": "pl",    "name": "Polish",               "native": "Polski",        "rtl": false, "script": "latin" },
+      { "code": "cs",    "name": "Czech",                "native": "Čeština",       "rtl": false, "script": "latin" },
+      { "code": "sk",    "name": "Slovak",               "native": "Slovenčina",    "rtl": false, "script": "latin" },
+      { "code": "hu",    "name": "Hungarian",            "native": "Magyar",        "rtl": false, "script": "latin" },
+      { "code": "ro",    "name": "Romanian",             "native": "Română",        "rtl": false, "script": "latin" },
+      { "code": "bg",    "name": "Bulgarian",            "native": "Български",     "rtl": false, "script": "cyrillic" },
+      { "code": "el",    "name": "Greek",                "native": "Ελληνικά",      "rtl": false, "script": "greek" },
+      { "code": "tr",    "name": "Turkish",              "native": "Türkçe",        "rtl": false, "script": "latin" },
+      { "code": "ar",    "name": "Arabic",               "native": "العربية",        "rtl": true,  "script": "arabic" },
+      { "code": "he",    "name": "Hebrew",               "native": "עברית",          "rtl": true,  "script": "hebrew" },
+      { "code": "fa",    "name": "Persian",              "native": "فارسی",          "rtl": true,  "script": "arabic" },
+      { "code": "hi",    "name": "Hindi",                "native": "हिन्दी",          "rtl": false, "script": "devanagari" },
+      { "code": "bn",    "name": "Bengali",              "native": "বাংলা",          "rtl": false, "script": "bengali" },
+      { "code": "ur",    "name": "Urdu",                 "native": "اردو",           "rtl": true,  "script": "arabic" },
+      { "code": "pa",    "name": "Punjabi",              "native": "ਪੰਜਾਬੀ",          "rtl": false, "script": "gurmukhi" },
+      { "code": "gu",    "name": "Gujarati",             "native": "ગુજરાતી",        "rtl": false, "script": "gujarati" },
+      { "code": "mr",    "name": "Marathi",              "native": "मराठी",          "rtl": false, "script": "devanagari" },
+      { "code": "ta",    "name": "Tamil",                "native": "தமிழ்",          "rtl": false, "script": "tamil" },
+      { "code": "te",    "name": "Telugu",               "native": "తెలుగు",         "rtl": false, "script": "telugu" },
+      { "code": "kn",    "name": "Kannada",              "native": "ಕನ್ನಡ",          "rtl": false, "script": "kannada" },
+      { "code": "ml",    "name": "Malayalam",            "native": "മലയാളം",         "rtl": false, "script": "malayalam" },
+      { "code": "si",    "name": "Sinhala",              "native": "සිංහල",          "rtl": false, "script": "sinhala" },
+      { "code": "ne",    "name": "Nepali",               "native": "नेपाली",         "rtl": false, "script": "devanagari" },
+      { "code": "th",    "name": "Thai",                 "native": "ไทย",            "rtl": false, "script": "thai" },
+      { "code": "vi",    "name": "Vietnamese",           "native": "Tiếng Việt",     "rtl": false, "script": "latin" },
+      { "code": "id",    "name": "Indonesian",           "native": "Bahasa Indonesia","rtl": false, "script": "latin" },
+      { "code": "ms",    "name": "Malay",                "native": "Bahasa Melayu",  "rtl": false, "script": "latin" },
+      { "code": "fil",   "name": "Filipino",             "native": "Filipino",       "rtl": false, "script": "latin" },
+      { "code": "zh-CN", "name": "Chinese (Simplified)", "native": "简体中文",        "rtl": false, "script": "han" },
+      { "code": "zh-TW", "name": "Chinese (Traditional)","native": "繁體中文",        "rtl": false, "script": "han" },
+      { "code": "ja",    "name": "Japanese",             "native": "日本語",          "rtl": false, "script": "japanese" },
+      { "code": "ko",    "name": "Korean",               "native": "한국어",          "rtl": false, "script": "hangul" },
+      { "code": "mn",    "name": "Mongolian",            "native": "Монгол",         "rtl": false, "script": "cyrillic" },
+      { "code": "kk",    "name": "Kazakh",               "native": "Қазақша",        "rtl": false, "script": "cyrillic" },
+      { "code": "uz",    "name": "Uzbek",                "native": "Oʻzbek",         "rtl": false, "script": "latin" },
+      { "code": "az",    "name": "Azerbaijani",          "native": "Azərbaycan",     "rtl": false, "script": "latin" },
+      { "code": "hy",    "name": "Armenian",             "native": "Հայերեն",        "rtl": false, "script": "armenian" },
+      { "code": "ka",    "name": "Georgian",             "native": "ქართული",        "rtl": false, "script": "georgian" },
+      { "code": "sw",    "name": "Swahili",              "native": "Kiswahili",      "rtl": false, "script": "latin" },
+      { "code": "am",    "name": "Amharic",              "native": "አማርኛ",          "rtl": false, "script": "ethiopic" },
+      { "code": "yo",    "name": "Yoruba",               "native": "Yorùbá",         "rtl": false, "script": "latin" },
+      { "code": "ig",    "name": "Igbo",                 "native": "Igbo",           "rtl": false, "script": "latin" },
+      { "code": "ha",    "name": "Hausa",                "native": "Hausa",          "rtl": false, "script": "latin" },
+      { "code": "zu",    "name": "Zulu",                 "native": "isiZulu",        "rtl": false, "script": "latin" },
+      { "code": "af",    "name": "Afrikaans",            "native": "Afrikaans",      "rtl": false, "script": "latin" },
+      { "code": "so",    "name": "Somali",               "native": "Soomaali",       "rtl": false, "script": "latin" }
+    ],
+    "detection": {
+      "engine": "pycld3",
+      "fallback_engine": "langdetect",
+      "min_text_length": 50,
+      "min_confidence": 0.65,
+      "enabled": true,
+      "sample_bytes": 4096
+    },
+    "default": "en",
+    "auto_detect": true,
+    "fallback_on_low_confidence": "en",
+    "rtl_languages": ["ar", "he", "fa", "ur"],
+    "cjk_languages": ["zh-CN", "zh-TW", "ja", "ko"],
+    "stopwords_enabled": true,
+    "tokenization_aware": true
+  },
+
+  "tokens": {
+    "default_model": "cl100k_base",
+    "models": {
+      "cl100k_base":   { "encoding": "cl100k_base",   "provider": "openai", "enabled": true },
+      "o200k_base":    { "encoding": "o200k_base",    "provider": "openai", "enabled": true },
+      "p50k_base":     { "encoding": "p50k_base",     "provider": "openai", "enabled": false },
+      "p50k_edit":     { "encoding": "p50k_edit",     "provider": "openai", "enabled": false },
+      "r50k_base":     { "encoding": "r50k_base",     "provider": "openai", "enabled": false },
+      "gpt2":          { "encoding": "gpt2",          "provider": "openai", "enabled": false },
+      "llama3":        { "encoding": "llama3",        "provider": "meta",   "enabled": true },
+      "mistral":       { "encoding": "mistral",       "provider": "mistral","enabled": true },
+      "claude":        { "encoding": "claude",        "provider": "anthropic","enabled": true }
+    },
+    "counts": {
+      "words": true,
+      "tokens": true,
+      "characters": true,
+      "characters_no_spaces": true,
+      "sentences": true,
+      "paragraphs": true,
+      "lines": true,
+      "reading_time_min": true,
+      "unique_words": true,
+      "unique_tokens": true,
+      "avg_word_length": true,
+      "avg_sentence_length": true
+    },
+    "word_tokenization": {
+      "split_on": ["space", "punctuation", "hyphen_optional"],
+      "lowercase": false,
+      "strip_diacritics": false,
+      "min_word_length": 1
+    },
+    "sentence_split": {
+      "engine": "nltk_punkt",
+      "fallback": "regex",
+      "abbreviation_handling": true,
+      "quotes_handling": true
+    },
+    "top_words": {
+      "enabled": true,
+      "count": 5,
+      "exclude_stopwords": true,
+      "exclude_punctuation": true,
+      "min_length": 3,
+      "case_insensitive": true
+    },
+    "top_tokens": {
+      "enabled": false,
+      "count": 10
+    },
+    "cost_estimate": {
+      "enabled": true,
+      "currency": "USD",
+      "prices": {
+        "cl100k_base":  { "input_per_1k": 0.0005 },
+        "o200k_base":   { "input_per_1k": 0.0005 },
+        "llama3":       { "input_per_1k": 0.0 },
+        "mistral":      { "input_per_1k": 0.0 }
+      }
+    }
+  },
+
+  "ai_detect": {
+    "enabled": true,
+    "engine": "custom_ensemble",
+    "layers": [
+      { "id": "burstiness",        "weight": 0.14, "enabled": true, "params": { "window": 5, "metric": "stdev_sentence_length" } },
+      { "id": "perplexity",        "weight": 0.12, "enabled": true, "params": { "model": "gpt2-small", "sample_size": 2048 } },
+      { "id": "repetition",        "weight": 0.09, "enabled": true, "params": { "ngram": 3, "max_repeat_ratio": 0.15 } },
+      { "id": "punctuation_mix",   "weight": 0.07, "enabled": true, "params": { "measure": "entropy" } },
+      { "id": "sentence_length",   "weight": 0.08, "enabled": true, "params": { "ideal_stdev": 8.5 } },
+      { "id": "vocab_richness",    "weight": 0.06, "enabled": true, "params": { "metric": "type_token_ratio" } },
+      { "id": "ngram_entropy",     "weight": 0.07, "enabled": true, "params": { "n": 3 } },
+      { "id": "connective_density","weight": 0.05, "enabled": true, "params": { "list": ["moreover", "furthermore", "however", "therefore", "additionally"] } },
+      { "id": "hedge_words",       "weight": 0.05, "enabled": true, "params": { "list": ["perhaps", "maybe", "somewhat", "arguably", "potentially"] } },
+      { "id": "emoji_density",     "weight": 0.03, "enabled": true, "params": { "expected_human_range": [0, 0.03] } },
+      { "id": "list_ratio",        "weight": 0.05, "enabled": true, "params": { "ai_typical_ratio": 0.2 } },
+      { "id": "paragraph_uniform", "weight": 0.07, "enabled": true, "params": { "measure": "stdev_length" } },
+      { "id": "stylometric_var",   "weight": 0.06, "enabled": true, "params": { "features": ["function_word_freq", "punct_freq", "avg_syllables"] } },
+      { "id": "classifier_small",  "weight": 0.06, "enabled": true, "params": { "model": "roberta-base-openai-detector" } }
+    ],
+    "thresholds": {
+      "likely_human": 0.30,
+      "uncertain": 0.55,
+      "likely_ai": 0.78
+    },
+    "verdicts": {
+      "human":    "likely human-written",
+      "uncertain":"uncertain origin",
+      "ai":       "likely ai-generated"
+    },
+    "min_text_length": 100,
+    "max_text_length": 100000,
+    "sampling": {
+      "enabled": true,
+      "strategy": "middle_out",
+      "target_chars": 20000
+    },
+    "cache": {
+      "enabled": true,
+      "ttl_sec": 3600
+    },
+    "explainability": {
+      "enabled": true,
+      "include_layer_scores": true,
+      "include_verdict": true
+    }
+  },
+
+  "report": {
+    "enabled": true,
+    "size": [1200, 1600],
+    "dpi": 144,
+    "background": "#ffffff",
+    "foreground": "#000000",
+    "accent": "#000000",
+    "muted": "#737373",
+    "line": "#e6e6e6",
+    "fonts": {
+      "title":    { "path": "assets/SpaceGrotesk-Bold.ttf",   "size": 64, "fallback": "DejaVuSans-Bold.ttf" },
+      "subtitle": { "path": "assets/SpaceGrotesk-Medium.ttf", "size": 32, "fallback": "DejaVuSans.ttf" },
+      "label":    { "path": "assets/JetBrainsMono-Medium.ttf","size": 28, "fallback": "DejaVuSansMono.ttf" },
+      "value":    { "path": "assets/JetBrainsMono-Bold.ttf",  "size": 42, "fallback": "DejaVuSansMono-Bold.ttf" },
+      "footnote": { "path": "assets/Inter-Regular.ttf",       "size": 18, "fallback": "DejaVuSans.ttf" },
+      "mono":     { "path": "assets/JetBrainsMono-Regular.ttf","size": 22, "fallback": "DejaVuSansMono.ttf" },
+      "cjk":      { "path": "assets/NotoSansCJK-Regular.otf", "size": 28, "fallback": "NotoSans-Regular.ttf" },
+      "rtl":      { "path": "assets/NotoNaskhArabic-Regular.ttf","size": 28, "fallback": "NotoSans-Regular.ttf" }
+    },
+    "layout": {
+      "padding": 80,
+      "gutter": 32,
+      "row_height": 96,
+      "section_gap": 48,
+      "header_height": 180
+    },
+    "blocks": [
+      { "id": "header",   "type": "text",   "text": "nexus · report", "font": "title",    "y": 80 },
+      { "id": "subtitle", "type": "text",   "text": "single-pass · {domain}", "font": "subtitle", "y": 168 },
+      { "id": "rule_top", "type": "line",   "y": 220, "width": 1040, "height": 2 },
+      { "id": "words",    "type": "stat",   "label": "words",     "key": "word_count",      "y": 280 },
+      { "id": "tokens",   "type": "stat",   "label": "tokens",    "key": "token_count",     "y": 280, "x": 620 },
+      { "id": "chars",    "type": "stat",   "label": "chars",     "key": "char_count",      "y": 420 },
+      { "id": "sentences","type": "stat",   "label": "sentences", "key": "sentence_count",  "y": 420, "x": 620 },
+      { "id": "rule_mid", "type": "line",   "y": 560, "width": 1040, "height": 1 },
+      { "id": "ai_title", "type": "text",   "text": "ai-likelihood", "font": "label", "y": 600 },
+      { "id": "ai_gauge", "type": "gauge",  "key": "ai_probability", "y": 640, "width": 1040, "height": 60 },
+      { "id": "ai_verdict","type":"text",   "key": "ai_verdict", "font": "mono", "y": 720 },
+      { "id": "rule_low", "type": "line",   "y": 800, "width": 1040, "height": 1 },
+      { "id": "top_words_title", "type": "text", "text": "top 5 words", "font": "label", "y": 840 },
+      { "id": "top_words", "type": "bar",   "key": "top_words", "y": 880, "width": 1040, "row_height": 90 },
+      { "id": "rule_bottom","type": "line", "y": 1420, "width": 1040, "height": 1 },
+      { "id": "footnote", "type": "text",   "text": "generated by nexus · one pass · no follow", "font": "footnote", "y": 1480 }
+    ],
+    "charts": {
+      "bar": {
+        "bar_color": "#000000",
+        "bar_height": 40,
+        "label_font": "mono",
+        "value_font": "mono",
+        "gap": 16
+      },
+      "gauge": {
+        "color": "#000000",
+        "background": "#ececec",
+        "height": 32,
+        "border_radius": 16,
+        "indicator": "triangle"
+      },
+      "donut": {
+        "enabled": false,
+        "color": "#000000",
+        "background": "#ececec",
+        "radius": 120,
+        "thickness": 40
+      }
+    },
+    "output": {
+      "format": "png",
+      "optimize": true,
+      "quality": 92,
+      "base64_in_response": true,
+      "save_to_disk": false,
+      "save_path": "var/reports"
+    },
+    "locale": {
+      "number_format": "en-US",
+      "date_format": "YYYY-MM-DD",
+      "percent_format": "0.0%"
+    },
+    "timeouts": {
+      "max_render_ms": 800,
+      "thread_pool_size": 4
+    }
+  },
+
+  "graph": {
+    "enabled": true,
+    "layout": "force_directed",
+    "max_nodes": 500,
+    "max_edges": 2000,
+    "node_types": [
+      { "id": "document",  "color": "#000000", "shape": "circle",   "size": 24 },
+      { "id": "heading",   "color": "#000000", "shape": "square",   "size": 18 },
+      { "id": "paragraph", "color": "#737373", "shape": "circle",   "size": 10 },
+      { "id": "link",      "color": "#000000", "shape": "diamond",  "size": 12 },
+      { "id": "image",     "color": "#a3a3a3", "shape": "triangle", "size": 12 },
+      { "id": "author",    "color": "#000000", "shape": "hexagon",  "size": 14 },
+      { "id": "tag",       "color": "#d0d0d0", "shape": "pill",     "size": 10 },
+      { "id": "domain",    "color": "#000000", "shape": "cloud",    "size": 20 }
+    ],
+    "edge_types": [
+      { "id": "contains",  "style": "solid",  "width": 1.5, "color": "#000000" },
+      { "id": "links_to",  "style": "dashed", "width": 1.0, "color": "#737373" },
+      { "id": "authored_by","style": "dotted","width": 1.0, "color": "#737373" },
+      { "id": "tagged",    "style": "solid",  "width": 1.0, "color": "#d0d0d0" },
+      { "id": "references","style": "dashed", "width": 1.0, "color": "#000000" }
+    ],
+    "output_format": "json",
+    "schema": {
+      "version": "1.0.0",
+      "required": ["nodes", "edges"],
+      "node_fields": ["id", "type", "label", "size"],
+      "edge_fields": ["source", "target", "type"]
+    },
+    "detail_level": "medium",
+    "include_metadata": true,
+    "include_positions": true,
+    "positions_seed": 42
+  },
+
+  "security": {
+    "argon2": {
+      "time_cost": 3,
+      "memory_cost": 65536,
+      "parallelism": 4,
+      "hash_len": 32,
+      "salt_len": 16,
+      "type": "id",
+      "version": 19
+    },
+    "jwt": {
+      "algorithm": "HS256",
+      "access_ttl_sec": 3600,
+      "refresh_ttl_sec": 2592000,
+      "issuer": "nexus",
+      "audience": "nexus-client",
+      "leeway_sec": 30,
+      "allow_none": false
+    },
+    "csrf": {
+      "enabled": true,
+      "header": "X-CSRF-Token",
+      "cookie": "nexus_csrf",
+      "same_site": "lax",
+      "secure": true,
+      "ttl_sec": 3600
+    },
+    "cors": {
+      "enabled": true,
+      "allowed_origins": ["https://nexus.local", "http://localhost:8000", "http://127.0.0.1:8000"],
+      "allowed_methods": ["POST", "GET", "OPTIONS"],
+      "allowed_headers": ["Content-Type", "Authorization", "X-CSRF-Token", "X-Request-ID"],
+      "exposed_headers": ["X-Request-ID", "X-RateLimit-Remaining"],
+      "allow_credentials": true,
+      "max_age": 600
+    },
+    "csp": {
+      "default_src": ["'self'"],
+      "script_src": ["'self'"],
+      "style_src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
+      "font_src": ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com", "data:"],
+      "img_src": ["'self'", "data:"],
+      "connect_src": ["'self'"],
+      "frame_ancestors": ["'none'"],
+      "base_uri": ["'self'"],
+      "form_action": ["'self'"],
+      "object_src": ["'none'"],
+      "report_uri": null,
+      "upgrade_insecure_requests": true
+    },
+    "hsts": {
+      "enabled": true,
+      "max_age": 31536000,
+      "include_subdomains": true,
+      "preload": true
+    },
+    "x_frame_options": "DENY",
+    "x_content_type_options": "nosniff",
+    "referrer_policy": "strict-origin-when-cross-origin",
+    "permissions_policy": {
+      "geolocation": [],
+      "microphone": [],
+      "camera": [],
+      "payment": [],
+      "usb": [],
+      "magnetometer": [],
+      "gyroscope": [],
+      "accelerometer": []
+    },
+    "password_policy": {
+      "min_length": 12,
+      "max_length": 128,
+      "require_upper": true,
+      "require_lower": true,
+      "require_digit": true,
+      "require_symbol": true,
+      "disallow_common": true,
+      "disallow_user_info": true,
+      "max_reuse": 5
+    },
+    "session": {
+      "cookie_name": "nexus_session",
+      "cookie_secure": true,
+      "cookie_http_only": true,
+      "cookie_same_site": "lax",
+      "cookie_path": "/",
+      "rotation_sec": 3600,
+      "absolute_ttl_sec": 86400
+    },
+    "login": {
+      "max_attempts": 5,
+      "lockout_sec": 900,
+      "captcha_after_attempts": 3,
+      "constant_time_compare": true
+    },
+    "ssrf_protection": {
+      "enabled": true,
+      "scheme_allowlist": ["http", "https"],
+      "block_private_ips": true,
+      "block_loopback": true,
+      "block_link_local": true,
+      "block_metadata_endpoints": true,
+      "blocked_hosts": ["localhost", "127.0.0.1", "0.0.0.0", "::1", "169.254.169.254", "metadata.google.internal"],
+      "resolve_before_fetch": true,
+      "revalidate_after_redirect": true
+    },
+    "input_validation": {
+      "max_input_length": 4096,
+      "max_language_length": 64,
+      "allowed_mode_values": ["clean", "report", "graph", null],
+      "reject_control_chars": true,
+      "reject_null_bytes": true
+    },
+    "redaction": {
+      "enabled": true,
+      "patterns": ["password", "token", "secret", "api_key", "authorization", "cookie", "session"],
+      "replacement": "[REDACTED]"
+    }
+  },
+
+  "crypto": {
+    "cipher": "AES-256-GCM",
+    "key_bytes": 32,
+    "nonce_bytes": 12,
+    "tag_bytes": 16,
+    "key_source": "env:NEXUS_AES_KEY",
+    "key_rotation_days": 90,
+    "key_versioning": true,
+    "kdf": {
+      "algorithm": "HKDF-SHA256",
+      "salt_bytes": 16,
+      "info": "nexus-crypto-v1"
+    },
+    "password_hash": {
+      "algorithm": "argon2id",
+      "ref": "security.argon2"
+    },
+    "token_sign": {
+      "algorithm": "HMAC-SHA256",
+      "key_source": "env:NEXUS_JWT_SECRET"
+    },
+    "encrypted_fields": [
+      "cache.payload",
+      "session.refresh_token",
+      "user.email_lookup",
+      "audit.detail"
+    ],
+    "at_rest": {
+      "enabled": true,
+      "scope": "column",
+      "algorithm": "AES-256-GCM"
+    },
+    "in_transit": {
+      "min_tls_version": "1.2",
+      "preferred_tls_version": "1.3",
+      "hsts_enabled": true
+    },
+    "hash_algorithms": {
+      "url_key": "sha256",
+      "content_fingerprint": "blake2b",
+      "cache_key": "hmac-sha256"
+    },
+    "random": {
+      "source": "secrets",
+      "fallback": "os.urandom"
+    }
+  },
+
+  "rate_limit": {
+    "enabled": true,
+    "backend": "memory",
+    "algorithm": "sliding_window",
+    "window_sec": 60,
+    "per_ip": { "limit": 60, "burst": 10 },
+    "per_key": { "limit": 300, "burst": 30 },
+    "per_domain": { "limit": 30, "burst": 5 },
+    "global": { "limit": 1000, "burst": 100 },
+    "endpoint_overrides": {
+      "/api/process":  { "per_ip": 30, "per_key": 120 },
+      "/api/auth/login": { "per_ip": 10, "per_key": 10 },
+      "/api/auth/refresh": { "per_ip": 20 },
+      "/api/health":   { "per_ip": 300 }
+    },
+    "headers": {
+      "limit": "X-RateLimit-Limit",
+      "remaining": "X-RateLimit-Remaining",
+      "reset": "X-RateLimit-Reset",
+      "retry_after": "Retry-After"
+    },
+    "response": {
+      "status": 429,
+      "body": { "error": "rate_limit_exceeded" }
+    },
+    "trusted_proxies": ["127.0.0.1", "::1"],
+    "ip_header": "X-Forwarded-For",
+    "block_duration_sec": 300
+  },
+
+  "cache": {
+    "enabled": true,
+    "backend": "sqlite",
+    "db_path": "var/cache.db",
+    "key_algorithm": "hmac-sha256",
+    "default_ttl_sec": 900,
+    "ttl_by_type": {
+      "url_fetch": 900,
+      "search_result": 600,
+      "clean_output": 1800,
+      "report_png": 3600,
+      "graph_json": 1800,
+      "robots_txt": 3600,
+      "favicon": 86400
+    },
+    "max_entry_size_kb": 2048,
+    "max_total_size_mb": 512,
+    "eviction": "lru",
+    "cleanup_interval_sec": 300,
+    "compression": {
+      "enabled": true,
+      "algorithm": "zstd",
+      "level": 3
+    },
+    "encryption": {
+      "enabled": true,
+      "algorithm": "AES-256-GCM"
+    },
+    "negative_cache": {
+      "enabled": true,
+      "ttl_sec": 120,
+      "store_statuses": [404, 410, 451]
+    }
+  },
+
+  "storage": {
+    "backend": "sqlite",
+    "path": "var/nexus.db",
+    "journal_mode": "WAL",
+    "synchronous": "NORMAL",
+    "foreign_keys": true,
+    "busy_timeout_ms": 5000,
+    "connection_pool_size": 8,
+    "connection_max_overflow": 4,
+    "migrations": {
+      "enabled": true,
+      "dir": "migrations",
+      "auto_apply": true,
+      "backup_before": true
+    },
+    "tables": [
+      "users",
+      "sessions",
+      "api_keys",
+      "requests",
+      "audit",
+      "cache",
+      "ratelimit",
+      "jobs"
+    ],
+    "retention": {
+      "requests_days": 30,
+      "audit_days": 90,
+      "sessions_days": 30,
+      "cache_days": 7
+    },
+    "backup": {
+      "enabled": true,
+      "interval_hours": 24,
+      "keep_last": 7,
+      "path": "var/backups",
+      "compress": true
+    },
+    "postgres_fallback": {
+      "enabled": false,
+      "dsn_env": "NEXUS_PG_DSN",
+      "pool_min": 2,
+      "pool_max": 20
+    }
+  },
+
+  "logging": {
+    "level": "info",
+    "levels": ["debug", "info", "warn", "error", "critical"],
+    "format": "json",
+    "sinks": {
+      "stdout": { "enabled": true, "level": "info" },
+      "file":   { "enabled": true, "level": "debug", "path": "var/logs/nexus.log", "max_bytes": 10485760, "backups": 5 },
+      "stderr": { "enabled": false }
+    },
+    "fields": {
+      "timestamp": true,
+      "level": true,
+      "request_id": true,
+      "trace_id": true,
+      "span_id": true,
+      "user_id": true,
+      "ip": true,
+      "method": true,
+      "path": true,
+      "status": true,
+      "latency_ms": true,
+      "user_agent": true,
+      "referer": true
+    },
+    "redaction": {
+      "enabled": true,
+      "patterns": ["password", "token", "secret", "authorization", "cookie", "api_key"],
+      "replacement": "[REDACTED]"
+    },
+    "sampling": {
+      "enabled": true,
+      "debug_rate": 1.0,
+      "info_rate": 1.0,
+      "warn_rate": 1.0,
+      "error_rate": 1.0
+    },
+    "rotation": {
+      "max_bytes": 10485760,
+      "backups": 5,
+      "compress": true
+    },
+    "noise_filters": {
+      "health_checks": true,
+      "favicon": true,
+      "static_assets": true
+    }
+  },
+
+  "observability": {
+    "metrics": {
+      "enabled": true,
+      "endpoint": "/metrics",
+      "backend": "prometheus",
+      "prefix": "nexus_",
+      "include_runtime": true,
+      "include_process": true
+    },
+    "traces": {
+      "enabled": false,
+      "backend": "otlp",
+      "endpoint": "http://localhost:4318",
+      "sample_rate": 0.1
+    },
+    "health": {
+      "endpoint": "/api/health",
+      "check_db": true,
+      "check_cache": true,
+      "check_dns": false,
+      "timeout_ms": 500
+    },
+    "readiness": {
+      "endpoint": "/api/ready",
+      "require_db": true,
+      "require_cache": true,
+      "require_config": true
+    },
+    "liveness": {
+      "endpoint": "/api/live",
+      "fail_on_stall_sec": 60
+    },
+    "profiling": {
+      "enabled": false,
+      "endpoint": "/debug/pprof",
+      "require_admin": true
+    }
+  },
+
+  "i18n": {
+    "default_locale": "en-US",
+    "fallback_locale": "en-US",
+    "supported_locales": ["en-US", "es-ES", "fr-FR", "de-DE", "it-IT", "pt-BR", "ja-JP", "ko-KR", "zh-CN", "zh-TW", "ru-RU"],
+    "strings": {
+      "errors.invalid_input":    "The input could not be processed.",
+      "errors.too_long":         "The input exceeds the maximum allowed length.",
+      "errors.unsupported_mode": "The selected mode is not supported.",
+      "errors.rate_limited":     "Too many requests. Please try again shortly.",
+      "errors.upstream_failed":  "The upstream source could not be reached.",
+      "errors.parse_failed":     "The response could not be parsed.",
+      "errors.not_found":        "The requested resource was not found.",
+      "errors.unauthorized":     "Authentication required.",
+      "errors.forbidden":        "Access denied.",
+      "errors.internal":         "An internal error occurred.",
+      "success.clean":           "Content cleaned successfully.",
+      "success.report":          "Report generated successfully.",
+      "success.graph":           "Graph generated successfully.",
+      "success.search":          "Search completed.",
+      "label.words":             "words",
+      "label.tokens":            "tokens",
+      "label.chars":             "characters",
+      "label.sentences":         "sentences",
+      "label.ai_likelihood":     "ai-likelihood",
+      "label.top_words":         "top words",
+      "label.report_footer":     "generated by nexus",
+      "verdict.human":           "likely human-written",
+      "verdict.uncertain":       "uncertain origin",
+      "verdict.ai":              "likely ai-generated"
+    },
+    "number_formats": {
+      "en-US": { "decimal": ".", "thousands": ",", "percent": "%" },
+      "de-DE": { "decimal": ",", "thousands": ".", "percent": "%" },
+      "fr-FR": { "decimal": ",", "thousands": " ", "percent": "%" }
+    },
+    "date_formats": {
+      "en-US": "MM/DD/YYYY",
+      "en-GB": "DD/MM/YYYY",
+      "de-DE": "DD.MM.YYYY",
+      "ja-JP": "YYYY/MM/DD"
+    },
+    "rtl_locales": ["ar-SA", "he-IL", "fa-IR", "ur-PK"],
+    "cjk_locales": ["zh-CN", "zh-TW", "ja-JP", "ko-KR"]
+  },
+
+  "patterns": {
+    "email": {
+      "regex": "[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}",
+      "enabled": true,
+      "extract": true,
+      "validate": true
+    },
+    "phone": {
+      "regex": "\\+?[0-9][0-9\\-\\s().]{6,}[0-9]",
+      "enabled": true,
+      "extract": true,
+      "min_length": 7
+    },
+    "url": {
+      "regex": "https?://[^\\s\"'<>]+",
+      "enabled": true,
+      "extract": true,
+      "max_length": 2048
+    },
+    "ipv4": {
+      "regex": "\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b",
+      "enabled": true
+    },
+    "ipv6": {
+      "regex": "\\b([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\\b",
+      "enabled": true
+    },
+    "credit_card": {
+      "regex": "\\b(?:\\d[ -]?){13,19}\\b",
+      "enabled": true,
+      "extract": false,
+      "redact": true,
+      "luhn_check": true
+    },
+    "ssn": {
+      "regex": "\\b\\d{3}-\\d{2}-\\d{4}\\b",
+      "enabled": true,
+      "extract": false,
+      "redact": true
+    },
+    "date_iso": {
+      "regex": "\\d{4}-\\d{2}-\\d{2}",
+      "enabled": true,
+      "extract": true
+    },
+    "date_slash": {
+      "regex": "\\d{1,2}/\\d{1,2}/\\d{2,4}",
+      "enabled": true,
+      "extract": true
+    },
+    "time_24h": {
+      "regex": "\\b([01]?\\d|2[0-3]):[0-5]\\d(:[0-5]\\d)?\\b",
+      "enabled": true,
+      "extract": true
+    },
+    "hashtag": {
+      "regex": "#[A-Za-z0-9_]{1,50}",
+      "enabled": true,
+      "extract": true
+    },
+    "mention": {
+      "regex": "@[A-Za-z0-9_]{1,30}",
+      "enabled": true,
+      "extract": true
+    },
+    "uuid": {
+      "regex": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+      "enabled": true
+    },
+    "html_tag": {
+      "regex": "</?[a-zA-Z][^>]*>",
+      "enabled": true,
+      "strip": true
+    },
+    "markdown_link": {
+      "regex": "\\[([^\\]]+)\\]\\(([^)]+)\\)",
+      "enabled": true
+    },
+    "markdown_image": {
+      "regex": "!\\[([^\\]]*)\\]\\(([^)]+)\\)",
+      "enabled": true
+    },
+    "whitespace_runs": {
+      "regex": "[ \\t]{2,}",
+      "enabled": true,
+      "replace_with": " "
+    },
+    "blank_line_runs": {
+      "regex": "\\n{3,}",
+      "enabled": true,
+      "replace_with": "\\n\\n"
+    },
+    "tracking_query_params": {
+      "regex": "(utm_[a-z]+|fbclid|gclid|mc_cid|mc_eid|ref|source)",
+      "enabled": true,
+      "strip": true
+    },
+    "hex_color": {
+      "regex": "#(?:[0-9a-fA-F]{3}){1,2}\\b",
+      "enabled": true,
+      "extract": true
+    },
+    "currency": {
+      "regex": "[$€£¥₹]\\s?\\d+(?:[.,]\\d+)?",
+      "enabled": true,
+      "extract": true
+    },
+    "percentage": {
+      "regex": "\\d+(?:\\.\\d+)?\\s?%",
+      "enabled": true,
+      "extract": true
+    },
+    "coordinates": {
+      "regex": "-?\\d{1,3}\\.\\d+,\\s?-?\\d{1,3}\\.\\d+",
+      "enabled": true,
+      "extract": true
+    },
+    "isbn": {
+      "regex": "(?:ISBN(?:-1[03])?:?\\s?)?(?:97[89][- ]?)?(?:\\d[- ]?){9}[\\dX]",
+      "enabled": true
+    },
+    "doi": {
+      "regex": "10\\.\\d{4,9}/[-._;()/:A-Z0-9]+",
+      "enabled": true,
+      "extract": true
+    },
+    "arxiv_id": {
+      "regex": "arXiv:\\d{4}\\.\\d{4,5}(v\\d+)?",
+      "enabled": true,
+      "extract": true
+    },
+    "emoji": {
+      "regex": "[\\u{1F600}-\\u{1F64F}\\u{1F300}-\\u{1F5FF}\\u{1F680}-\\u{1F6FF}\\u{1F1E0}-\\u{1F1FF}]",
+      "enabled": true,
+      "count": true
+    },
+    "control_chars": {
+      "regex": "[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]",
+      "enabled": true,
+      "strip": true
+    },
+    "zero_width": {
+      "regex": "[\\u200B-\\u200D\\uFEFF]",
+      "enabled": true,
+      "strip": true
+    }
+  },
+
+  "branding": {
+    "name": "nexus",
+    "tagline": "single-pass scraper",
+    "domain": "nexus.local",
+    "logo_svg": "assets/logo.svg",
+    "logo_png": "assets/logo.png",
+    "favicon": "assets/favicon.ico",
+    "favicon_32": "assets/favicon-32.png",
+    "favicon_180": "assets/apple-touch-icon.png",
+    "primary_color": "#000000",
+    "background_color": "#ffffff",
+    "accent_color": "#000000",
+    "muted_color": "#737373",
+    "font_display": "Space Grotesk",
+    "font_body": "Inter",
+    "font_mono": "JetBrains Mono"
+  }
+}
